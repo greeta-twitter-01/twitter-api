@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: analytics-service
+  profiles:
+    active: analytics
+
+log:
+  app-name: analytics-service
+
+analytics-service:
+  version: v2
+  custom-audience: analytics-service

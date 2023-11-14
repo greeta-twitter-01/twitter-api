@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: kafka-streams-service
+  profiles:
+    active: kafka_streams
+
+log:
+  app-name: kafka-streams-service
+
+kafka-streams-service:
+  version: v1
+  custom-audience: kafka-streams-service
