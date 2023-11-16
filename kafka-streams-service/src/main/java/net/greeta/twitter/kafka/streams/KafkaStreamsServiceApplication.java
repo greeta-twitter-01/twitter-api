@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableDiscoveryClient
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.microservices.demo"})
+@ComponentScan(basePackages = {"net.greeta.twitter"})
 public class KafkaStreamsServiceApplication implements CommandLineRunner {
 
 	private static final Logger LOG = LoggerFactory.getLogger(KafkaStreamsServiceApplication.class);

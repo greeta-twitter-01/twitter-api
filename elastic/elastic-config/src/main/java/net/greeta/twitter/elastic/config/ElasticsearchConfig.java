@@ -6,7 +6,7 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "com.microservices.demo.elastic")
+@EnableElasticsearchRepositories(basePackages = "net.greeta.twitter.elastic")
 public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
     private final ElasticConfigData elasticConfigData;

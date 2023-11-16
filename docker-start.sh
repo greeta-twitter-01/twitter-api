@@ -2,23 +2,27 @@ docker-compose down
 
 mvn clean install -DskipTests
 
-cd customer-service/customer-container
+cd ./elastic-query-service
 mvn spring-boot:build-image -DskipTests \
-  -Dspring-boot.build-image.imageName=customer-service
+  -Dspring-boot.build-image.imageName=elastic-query-service
 
-cd ../../restaurant-service/restaurant-container
+cd ../analytics-service
 mvn spring-boot:build-image -DskipTests \
-  -Dspring-boot.build-image.imageName=restaurant-service
+  -Dspring-boot.build-image.imageName=analytics-service
 
-cd ../../payment-service/payment-container
+cd ../kafka-streams-service
 mvn spring-boot:build-image -DskipTests \
-  -Dspring-boot.build-image.imageName=payment-service
+  -Dspring-boot.build-image.imageName=kafka-streams-service
 
-cd ../../order-service/order-container
+cd ../twitter-to-kafka-service
 mvn spring-boot:build-image -DskipTests \
-  -Dspring-boot.build-image.imageName=order-service
+  -Dspring-boot.build-image.imageName=twitter-to-kafka-service
 
-cd ../../gateway-service
+cd ../kafka-to-elastic-service
+mvn spring-boot:build-image -DskipTests \
+  -Dspring-boot.build-image.imageName=kafka-to-elastic-service
+
+cd ../gateway-service
 mvn spring-boot:build-image -DskipTests \
   -Dspring-boot.build-image.imageName=gateway-service
 

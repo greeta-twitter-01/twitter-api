@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableDiscoveryClient
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.microservices.demo"})
+@ComponentScan(basePackages = {"net.greeta.twitter"})
 public class AnalyticsApplication {
 
     public static void main(String[] args) {

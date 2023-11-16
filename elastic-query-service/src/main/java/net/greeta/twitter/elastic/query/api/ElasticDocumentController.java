@@ -1,16 +1,20 @@
 package net.greeta.twitter.elastic.query.api;
 
-import net.greeta.twitter.elastic.query.business.ElasticQueryService;
-import net.greeta.twitter.elastic.query.common.model.ElasticQueryServiceRequestModel;
-import net.greeta.twitter.elastic.query.common.model.ElasticQueryServiceResponseModel;
-import net.greeta.twitter.elastic.query.model.ElasticQueryServiceResponseModelV2;
-import net.greeta.twitter.elastic.query.security.TwitterQueryUser;
-import net.greeta.twitter.elastic.query.model.ElasticQueryServiceAnalyticsResponseModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.RequiredArgsConstructor;
+import net.greeta.twitter.elastic.query.business.ElasticQueryService;
+import net.greeta.twitter.elastic.query.common.model.ElasticQueryServiceRequestModel;
+import net.greeta.twitter.elastic.query.common.model.ElasticQueryServiceResponseModel;
+import net.greeta.twitter.elastic.query.helper.JwtHelper;
+import net.greeta.twitter.elastic.query.model.ElasticQueryServiceAnalyticsResponseModel;
+import net.greeta.twitter.elastic.query.model.ElasticQueryServiceResponseModelV2;
+import net.greeta.twitter.elastic.query.security.JwtAuthConverterProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,23 +24,27 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 @PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping(value = "/documents", produces = "application/vnd.api.v1+json")
+@RequiredArgsConstructor
 public class ElasticDocumentController {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticDocumentController.class);
 
     private final ElasticQueryService elasticQueryService;
 
-    public ElasticDocumentController(ElasticQueryService queryService) {
-        this.elasticQueryService = queryService;
-    }
+    private final JwtAuthConverterProperties jwtAuthConverterProperties;
 
     @Value("${server.port}")
     private String port;
@@ -118,10 +126,10 @@ public class ElasticDocumentController {
     public @ResponseBody
     ResponseEntity<ElasticQueryServiceAnalyticsResponseModel>
     getDocumentByText(@RequestBody @Valid ElasticQueryServiceRequestModel elasticQueryServiceRequestModel,
-                      @AuthenticationPrincipal TwitterQueryUser principal,
-                      @RegisteredOAuth2AuthorizedClient("keycloak")
+                      @AuthenticationPrincipal Jwt jwt,
+                      @RegisteredOAuth2AuthorizedClient("twitter-app")
                               OAuth2AuthorizedClient oAuth2AuthorizedClient) {
-        LOG.info("User {} querying documents for text {}", principal.getUsername(),
+        LOG.info("User {} querying documents for text {}", JwtHelper.getUsername(jwt, jwtAuthConverterProperties),
                 elasticQueryServiceRequestModel.getText());
 
         ElasticQueryServiceAnalyticsResponseModel response =

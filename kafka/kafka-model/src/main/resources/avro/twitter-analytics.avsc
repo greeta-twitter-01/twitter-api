@@ -1,4 +1,4 @@
- {"namespace": "com.microservices.demo.kafka.avro.model",
+ {"namespace": "net.greeta.twitter.kafka.avro.model",
    "type": "record",
    "name": "TwitterAnalyticsAvroModel",
    "fields": [

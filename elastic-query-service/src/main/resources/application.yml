@@ -1,31 +1,86 @@
-logging:
-  level:
-    ROOT: DEBUG
-    com.microservices.demo: DEBUG
+server:
+  shutdown: graceful
+  forward-headers-strategy: framework
+  tomcat:
+    connection-timeout: 2s
+    keep-alive-timeout: 15s
+    threads:
+      max: 50
+      min-spare: 5
 
 spring:
   application:
-    name: elastic-query-service
-  profiles:
-    active: elastic_query
-  config:
-    import: 'configserver:'
-  cloud:
-    config:
-      name: elastic-query-service,config-client
-      username: spring_cloud_user
-      password: '1234'
+    name: elastic-query
+  lifecycle:
+    timeout-per-shutdown-phase: 15s
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    lease-expiration-duration-in-seconds: 5
-    lease-renewal-interval-in-seconds: 2
+  jpa:
+    open-in-view: false
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://twitter-postgres:5432/postgres?currentSchema=public&binaryTransfer=true&reWriteBatchedInserts=true
+    username: postgres
+    password: admin
+    schema: classpath:init-schema.sql
+    data: classpath:init-data.sql
+    initialization-mode: always
 
-log:
-  appName: elastic-query-service
+  keycloak:
+    server-url: http://localhost:8080
+    server-external-url: http://localhost:8080
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${spring.keycloak.server-external-url}/realms/twitter-realm
+          jwk-set-uri: ${spring.keycloak.server-url}/realms/twitter-realm/protocol/openid-connect/certs
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+    console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+  level:
+    net.greeta.twitter: DEBUG
+    org.springframework.cloud.kubernetes: TRACE
+    org.springframework.security: DEBUG
+
+info:
+  system: Elastic Query Service
+
+jwt:
+  auth:
+    converter:
+      resource-id: twitter-app
+      principal-attribute: preferred_username
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bindings, configprops, env, flyway, functions, health, heapdump, info, loggers, mappings, prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+
+openapi:
+  oauthflow:
+    authServerUrl: ${spring.keycloak.server-external-url}
+    realm: twitter-realm
+
 
 elastic-query-service:
   version: v1
@@ -40,9 +95,19 @@ elastic-query-service:
     query-type: 'ANALYTICS_DATABASE'
   query-from-kafka-state-store:
     method: GET
-    uri: "http://gateway-service/kafka-streams-service/get-word-count-by-word/{word}"
+    uri: "http://gateway:9000/kafka-streams/get-word-count-by-word/{word}"
     accept: ${elastic-query-service.webclient.accept-type}
   query-from-analytics-database:
     method: GET
-    uri: "http://gateway-service/analytics-service/get-word-count-by-word/{word}"
+    uri: "http://gateway:9000/analytics/get-word-count-by-word/{word}"
     accept: ${elastic-query-service.webclient.accept-type}
+
+
+elastic-query-config:
+  text-field: text
+
+elastic-config:
+  index-name: twitter-index
+  connection-url: http://elastic-query:9001
+  connect-timeout-ms: 5000
+  socket-timeout-ms: 30000

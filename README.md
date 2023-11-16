@@ -19,7 +19,7 @@ sh docker-start.sh
 
 - Warning! Sometimes REST endpoints return `504 Gateway Timeout`, just retry the REST API endpoint again
 
-- click "Authorize" and use admin/admin or user/user for credentials (clientId should be `order-app`)
+- click "Authorize" and use admin/admin or user/user for credentials (clientId should be `twitter-app`)
 
 - create Customer on `Customer` page (see `json-files/customer.json` as example)
 

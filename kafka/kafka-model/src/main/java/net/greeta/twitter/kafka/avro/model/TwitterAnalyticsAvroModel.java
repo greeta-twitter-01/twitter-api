@@ -5,17 +5,19 @@
  */
 package net.greeta.twitter.kafka.avro.model;
 
+import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
+import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
 import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -3147340086224479915L;
+  private static final long serialVersionUID = 4078108316277731848L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"TwitterAnalyticsAvroModel\",\"namespace\":\"com.microservices.demo.kafka.avro.model\",\"fields\":[{\"name\":\"word\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"wordCount\",\"type\":[\"null\",\"long\"]},{\"name\":\"createdAt\",\"type\":[\"null\",\"long\"],\"logicalType\":[\"null\",\"date\"]}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"TwitterAnalyticsAvroModel\",\"namespace\":\"net.greeta.twitter.kafka.avro.model\",\"fields\":[{\"name\":\"word\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"wordCount\",\"type\":[\"null\",\"long\"]},{\"name\":\"createdAt\",\"type\":[\"null\",\"long\"],\"logicalType\":[\"null\",\"date\"]}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -178,8 +180,8 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
    * Creates a new TwitterAnalyticsAvroModel RecordBuilder.
    * @return A new TwitterAnalyticsAvroModel RecordBuilder
    */
-  public static TwitterAnalyticsAvroModel.Builder newBuilder() {
-    return new TwitterAnalyticsAvroModel.Builder();
+  public static net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder newBuilder() {
+    return new net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder();
   }
 
   /**
@@ -187,11 +189,11 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
    * @param other The existing builder to copy.
    * @return A new TwitterAnalyticsAvroModel RecordBuilder
    */
-  public static TwitterAnalyticsAvroModel.Builder newBuilder(TwitterAnalyticsAvroModel.Builder other) {
+  public static net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder newBuilder(net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder other) {
     if (other == null) {
-      return new TwitterAnalyticsAvroModel.Builder();
+      return new net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder();
     } else {
-      return new TwitterAnalyticsAvroModel.Builder(other);
+      return new net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder(other);
     }
   }
 
@@ -200,11 +202,11 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
    * @param other The existing instance to copy.
    * @return A new TwitterAnalyticsAvroModel RecordBuilder
    */
-  public static TwitterAnalyticsAvroModel.Builder newBuilder(TwitterAnalyticsAvroModel other) {
+  public static net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder newBuilder(net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel other) {
     if (other == null) {
-      return new TwitterAnalyticsAvroModel.Builder();
+      return new net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder();
     } else {
-      return new TwitterAnalyticsAvroModel.Builder(other);
+      return new net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder(other);
     }
   }
 
@@ -228,7 +230,7 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(TwitterAnalyticsAvroModel.Builder other) {
+    private Builder(net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.word)) {
         this.word = data().deepCopy(fields()[0].schema(), other.word);
@@ -248,7 +250,7 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
      * Creates a Builder by copying an existing TwitterAnalyticsAvroModel instance
      * @param other The existing instance to copy.
      */
-    private Builder(TwitterAnalyticsAvroModel other) {
+    private Builder(net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel other) {
       super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.word)) {
         this.word = data().deepCopy(fields()[0].schema(), other.word);
@@ -278,7 +280,7 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
       * @param value The value of 'word'.
       * @return This builder.
       */
-    public TwitterAnalyticsAvroModel.Builder setWord(java.lang.String value) {
+    public net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder setWord(java.lang.String value) {
       validate(fields()[0], value);
       this.word = value;
       fieldSetFlags()[0] = true;
@@ -298,7 +300,7 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
       * Clears the value of the 'word' field.
       * @return This builder.
       */
-    public TwitterAnalyticsAvroModel.Builder clearWord() {
+    public net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder clearWord() {
       word = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -318,7 +320,7 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
       * @param value The value of 'wordCount'.
       * @return This builder.
       */
-    public TwitterAnalyticsAvroModel.Builder setWordCount(java.lang.Long value) {
+    public net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder setWordCount(java.lang.Long value) {
       validate(fields()[1], value);
       this.wordCount = value;
       fieldSetFlags()[1] = true;
@@ -338,7 +340,7 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
       * Clears the value of the 'wordCount' field.
       * @return This builder.
       */
-    public TwitterAnalyticsAvroModel.Builder clearWordCount() {
+    public net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder clearWordCount() {
       wordCount = null;
       fieldSetFlags()[1] = false;
       return this;
@@ -358,7 +360,7 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
       * @param value The value of 'createdAt'.
       * @return This builder.
       */
-    public TwitterAnalyticsAvroModel.Builder setCreatedAt(java.lang.Long value) {
+    public net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder setCreatedAt(java.lang.Long value) {
       validate(fields()[2], value);
       this.createdAt = value;
       fieldSetFlags()[2] = true;
@@ -378,7 +380,7 @@ public class TwitterAnalyticsAvroModel extends org.apache.avro.specific.Specific
       * Clears the value of the 'createdAt' field.
       * @return This builder.
       */
-    public TwitterAnalyticsAvroModel.Builder clearCreatedAt() {
+    public net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel.Builder clearCreatedAt() {
       createdAt = null;
       fieldSetFlags()[2] = false;
       return this;

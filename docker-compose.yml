@@ -2,13 +2,13 @@ version: "3.8"
 services:
   # Applications
 
-  customer:
+  elastic-query:
     depends_on:
-      - order-keycloak
-      - order-postgres
+      - twitter-keycloak
+      - twitter-postgres
       - kafka-ui
-    image: "customer-service"
-    container_name: "customer"
+    image: "elastic-query-service"
+    container_name: "elastic-query"
     ports:
       - 9001:9001
       - 8001:8001
@@ -17,34 +17,35 @@ services:
       - BPL_JVM_THREAD_COUNT=50
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8001
-      - SPRING_KEYCLOAK_SERVER_URL=http://order-keycloak:8080
+      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
       - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
 
-  order:
+  analytics:
     depends_on:
-      - order-keycloak
-      - order-postgres
+      - twitter-keycloak
+      - twitter-postgres
       - kafka-ui
-    image: "order-service"
-    container_name: "order"
+    image: "analytics-service"
+    container_name: "analytics"
     ports:
       - 9002:9002
       - 8002:8002
     environment:
       - SERVER_PORT=9002
-      # Buildpacks environment variable to enable debug through a socket on port 8002
+      - BPL_JVM_THREAD_COUNT=50
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8002
-      - SPRING_KEYCLOAK_SERVER_URL=http://order-keycloak:8080
+      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
       - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
 
-  restaurant:
+
+  kafka-streams:
     depends_on:
-      - order-keycloak
-      - order-postgres
+      - twitter-keycloak
+      - twitter-postgres
       - kafka-ui
-    image: "restaurant-service"
-    container_name: "restaurant"
+    image: "kafka-streams-service"
+    container_name: "kafka-streams"
     ports:
       - 9003:9003
       - 8003:8003
@@ -53,16 +54,17 @@ services:
       - BPL_JVM_THREAD_COUNT=50
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8003
-      - SPRING_KEYCLOAK_SERVER_URL=http://order-keycloak:8080
+      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
       - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
 
-  payment:
+  twitter-to-kafka:
     depends_on:
-      - order-keycloak
-      - order-postgres
+      - twitter-keycloak
+      - twitter-postgres
       - kafka-ui
-    image: "payment-service"
-    container_name: "payment"
+      - broker
+    image: "twitter-to-kafka-service"
+    container_name: "twitter-to-kafka"
     ports:
       - 9004:9004
       - 8004:8004
@@ -71,13 +73,34 @@ services:
       - BPL_JVM_THREAD_COUNT=50
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8004
-      - SPRING_KEYCLOAK_SERVER_URL=http://order-keycloak:8080
+      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
+      - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
+
+  kafka-to-elastic:
+    depends_on:
+      - twitter-keycloak
+      - twitter-postgres
+      - kafka-ui
+      - twitter-to-kafka
+      - broker
+      - elastic
+    image: "kafka-to-elastic-service"
+    container_name: "kafka-to-elastic"
+    ports:
+      - 9005:9005
+      - 8005:8005
+    environment:
+      - SERVER_PORT=9005
+      - BPL_JVM_THREAD_COUNT=50
+      - BPL_DEBUG_ENABLED=true
+      - BPL_DEBUG_PORT=8005
+      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
       - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
   
   gateway:
     depends_on:
-      - order-keycloak
-      - order-redis
+      - twitter-keycloak
+      - twitter-redis
       - kafka-ui
     image: "gateway-service"
     container_name: "gateway"
@@ -89,26 +112,27 @@ services:
       # Buildpacks environment variable to enable debug through a socket on port 8000
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8000
-      - CUSTOMER_SERVICE_URL=http://customer:9001
-      - ORDER_SERVICE_URL=http://order:9002
+      - ELASTIC_QUERY_SERVICE_URL=http://elastic-query:9001
+      - ANALYTICS_SERVICE_URL=http://analytics:9002
+      - KAFKA_STREAMS_SERVICE_URL=http://kafka-streams:9003
       - SPRING_REDIS_HOST=order-redis
       - SPRING_KEYCLOAK_SERVER_URL=http://order-keycloak:8080
       - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
   
   # Backing Services
 
-  order-postgres:
+  twitter-postgres:
     image: "postgres:14.4"
-    container_name: "order-postgres"
+    container_name: "twitter-postgres"
     ports:
       - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
 
-  order-redis:
+  twitter-redis:
     image: "redis:7.0"
-    container_name: "order-redis"
+    container_name: "twitter-redis"
     ports:
       - 6379:6379
 
@@ -124,9 +148,9 @@ services:
     healthcheck:
       test: "pg_isready -U postgres"
   
-  order-keycloak:
-    image: quay.io/keycloak/keycloak:22.0.1
-    container_name: order-keycloak
+  twitter-keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
+    container_name: twitter-keycloak
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -218,43 +242,9 @@ services:
       SCHEMA_REGISTRY_DEBUG: 'true'
 
 
-  init-kafka:
-    image: confluentinc/cp-kafka:7.1.0
-    platform: linux/amd64
-    depends_on:
-      - schema-registry
-      - broker
-      - zookeeper
-    entrypoint: [ '/bin/sh', '-c' ]
-    command: |
-      "
-      # block until kafka is reachable
-      kafka-topics --bootstrap-server broker:29092 --list
-
-      echo -e 'Deleting kafka topics'
-      kafka-topics --bootstrap-server broker:29092 --topic payment-request --delete --if-exists
-      kafka-topics --bootstrap-server broker:29092 --topic payment-response --delete --if-exists
-      kafka-topics --bootstrap-server broker:29092 --topic restaurant-approval-request --delete --if-exists
-      kafka-topics --bootstrap-server broker:29092 --topic restaurant-approval-response --delete --if-exists
-      kafka-topics --bootstrap-server broker:29092 --topic customer --delete --if-exists
-
-      echo -e 'Creating kafka topics'
-      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic payment-request --replication-factor 1 --partitions 1
-      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic payment-response --replication-factor 1 --partitions 1
-      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic restaurant-approval-request --replication-factor 1 --partitions 1
-      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic restaurant-approval-response --replication-factor 1 --partitions 1
-      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic customer --replication-factor 1 --partitions 1
-
-
-
-      echo -e 'Successfully created the following topics:'
-      kafka-topics --bootstrap-server broker:29092 --list
-      "
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
-    depends_on:
-      - init-kafka
     ports:
       - "8082:8082"
     environment:
@@ -262,3 +252,22 @@ services:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:29092
       - DYNAMIC_CONFIG_ENABLED=true
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-latest}
+    hostname: elastic
+    environment:
+      - node.name=elastic
+      - cluster.name=es-twitter-cluster
+      - discovery.seed_hosts=elastic
+      - cluster.initial_master_nodes=elastic
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - "./volumes/elastic:/usr/share/elasticsearch/data"
+    ports:
+      - 9200:9200

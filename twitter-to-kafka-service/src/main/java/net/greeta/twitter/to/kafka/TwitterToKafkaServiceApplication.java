@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 import java.util.Arrays;
 
 @SpringBootApplication
-@ComponentScan(basePackages = "com.microservices.demo")
+@ComponentScan(basePackages = "net.greeta.twitter")
 public class TwitterToKafkaServiceApplication implements CommandLineRunner {
 
     private static final Logger LOG = LoggerFactory.getLogger(TwitterToKafkaServiceApplication.class);
