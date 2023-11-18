@@ -1,6 +1,6 @@
 elastic-config:
   index-name: twitter-index
-  connection-url: http://elastic:9200
+  connection-url: elastic:9200
   connect-timeout-ms: 5000
   socket-timeout-ms: 30000
 

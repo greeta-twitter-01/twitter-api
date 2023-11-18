@@ -23,9 +23,9 @@ public class WebSecurityConfig {
 
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**", "/actuator/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET,"/", "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/documents/", "/documents/**").permitAll()
 
-                        .requestMatchers("/", "/**").hasRole(TWITTER_MANAGER)
+                        .requestMatchers("/documents/", "/documents/**").hasRole(TWITTER_MANAGER)
 
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(

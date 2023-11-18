@@ -18,16 +18,8 @@ public class GatewayConfig {
 
     private final GatewayServiceConfigData gatewayServiceConfigData;
 
-    private static final String HEADER_FOR_KEY_RESOLVER = "Authorization";
-
     public GatewayConfig(GatewayServiceConfigData configData) {
         this.gatewayServiceConfigData = configData;
-    }
-
-    @Bean(name = "authHeaderResolver")
-    KeyResolver userKeyResolver() {
-        return exchange -> Mono.just(Objects.requireNonNull(exchange
-                .getRequest().getHeaders().getFirst(HEADER_FOR_KEY_RESOLVER)));
     }
 
     @Bean

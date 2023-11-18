@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping(value = "/documents", produces = "application/vnd.api.v1+json")
 @RequiredArgsConstructor
@@ -49,7 +48,7 @@ public class ElasticDocumentController {
     @Value("${server.port}")
     private String port;
 
-    @PostAuthorize("hasPermission(returnObject, 'READ')")
+    //@PostAuthorize("hasPermission(returnObject, 'READ')")
     @Operation(summary = "Get all elastic documents.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful response.", content = {
@@ -69,7 +68,7 @@ public class ElasticDocumentController {
     }
 
 
-    @PreAuthorize("hasPermission(#id, 'ElasticQueryServiceResponseModel','READ')")
+    //@PreAuthorize("hasPermission(#id, 'ElasticQueryServiceResponseModel','READ')")
     @Operation(summary = "Get elastic document by id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful response.", content = {
@@ -110,8 +109,8 @@ public class ElasticDocumentController {
     }
 
 
-    @PreAuthorize("hasRole('APP_USER_ROLE') || hasRole('APP_SUPER_USER_ROLE') || hasAuthority('SCOPE_APP_USER_ROLE')")
-    @PostAuthorize("hasPermission(returnObject, 'READ')")
+    //@PreAuthorize("hasRole('TWITTER_USER') || hasRole('TWITTER_MANAGER')")
+    //@PostAuthorize("hasPermission(returnObject, 'READ')")
     @Operation(summary = "Get elastic document by text.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful response.", content = {

@@ -35,7 +35,7 @@ sh docker-start.sh
 
 - Congratulations! You successfuly tested `Food Ordering System` Saga transactions and CQRS!
 
-- See this README file for AWS Infrastructure Setup: **https://github.com/greeta-restaurant-01/order-infra**
+- See this README file for AWS Infrastructure Setup: **https://github.com/greeta-twitter-01/twitter-infra**
 
 
 ### Remote Debugging
@@ -52,7 +52,10 @@ kubectl port-forward 8002:8002
 #### Kafka Containers Troubleshooting
 
 - Check containers in the following order:
-- `Kafka Server (cp-server)`: if container has errors or stopped responding (check the logs), remove container (docker stop, docker rm ) and run `docker-compose up -d` again
-- `Init Kafka (cp-kafka)`: container should finish creation of kafka topics successfully and then stop. If container is not responding or has errors, remove container (docker stop, docker rm ) and run `docker-compose up -d` again
-- `Schema Registry (cp-schema-registry)`: if container has errors or stopped responding (check the logs), remove container (docker stop, docker rm ) and run `docker-compose up -d` again
+- `Kafka Server (cp-server)`
+- `Init Kafka (cp-kafka)`: container should finish creation of kafka topics successfully and then exit
+- `Schema Registry (cp-schema-registry)`
 - If everything is sussessful, containers `cp-server` and `cp-schema-registry` should be running without errors and container `cp-kafka` should finish its job and exit without errors.
+- if any of the containers has exited with errors, run `docker-compose up -d` again
+- if any of the containers stopped responding (check the logs), remove container (docker stop, docker rm ) and run `docker-compose up -d` again
+- For example, if `kafka-to-elastic-service` stopped with errors, just run `docker-compose up -d` again

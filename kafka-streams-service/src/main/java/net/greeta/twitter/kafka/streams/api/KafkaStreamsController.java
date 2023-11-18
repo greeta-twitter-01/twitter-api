@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.constraints.NotEmpty;
 
-@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping(value = "/", produces = "application/vnd.api.v1+json")
 public class KafkaStreamsController {

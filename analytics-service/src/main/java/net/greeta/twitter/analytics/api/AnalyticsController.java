@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.Optional;
 
-@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping(value = "/", produces = "application/vnd.api.v1+json")
 public class AnalyticsController {

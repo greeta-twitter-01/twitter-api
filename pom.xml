@@ -18,6 +18,7 @@
         <java.version>17</java.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <springdoc.version>2.2.0</springdoc.version>
+		<swagger-annotations.version>2.2.18</swagger-annotations.version>
         <spring-cloud.version>2022.0.4</spring-cloud.version>
         <testcontainers.version>1.18.3</testcontainers.version>
         <otel.version>1.17.0</otel.version>
@@ -41,8 +42,8 @@
 
 		<kafka-streams.version>3.5.1</kafka-streams.version>
 		<kafka-clients.version>3.5.1</kafka-clients.version>
-		<kafka-avro-serializer.version>7.4.0</kafka-avro-serializer.version>
-		<kafka-streams-avro-serde.version>7.4.0</kafka-streams-avro-serde.version>
+		<kafka-avro-serializer.version>7.5.1</kafka-avro-serializer.version>
+		<kafka-streams-avro-serde.version>7.5.1</kafka-streams-avro-serde.version>
 		<avro.version>1.11.2</avro.version>
 
 
@@ -64,8 +65,8 @@
 		<module>kafka-streams-service</module>
 		<module>twitter-to-kafka-service</module>
 		<module>kafka-to-elastic-service</module>
-		<module>elastic-query-service</module>
 		<module>elastic-query-service-common</module>
+		<module>elastic-query-service</module>
 		<module>analytics-service</module>
 
         <module>gateway-service</module>              
@@ -157,24 +158,6 @@
 				<groupId>io.confluent</groupId>
 				<artifactId>kafka-avro-serializer</artifactId>
 				<version>${kafka-avro-serializer.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.slf4j</groupId>
-						<artifactId>slf4j-log4j12</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>log4j</groupId>
-						<artifactId>log4j</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>io.swagger</groupId>
-						<artifactId>swagger-annotations</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>io.swagger</groupId>
-						<artifactId>swagger-core</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 
 			<dependency>

@@ -7,6 +7,8 @@ services:
       - twitter-keycloak
       - twitter-postgres
       - kafka-ui
+      - broker
+      - elastic
     image: "elastic-query-service"
     container_name: "elastic-query"
     ports:
@@ -19,12 +21,15 @@ services:
       - BPL_DEBUG_PORT=8001
       - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
       - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
+      - ELASTIC-CONFIG_CONNECTION-URL=elastic:9200
 
   analytics:
     depends_on:
       - twitter-keycloak
       - twitter-postgres
       - kafka-ui
+      - broker
+      - elastic
     image: "analytics-service"
     container_name: "analytics"
     ports:
@@ -44,6 +49,8 @@ services:
       - twitter-keycloak
       - twitter-postgres
       - kafka-ui
+      - broker
+      - elastic
     image: "kafka-streams-service"
     container_name: "kafka-streams"
     ports:
@@ -63,6 +70,7 @@ services:
       - twitter-postgres
       - kafka-ui
       - broker
+      - elastic
     image: "twitter-to-kafka-service"
     container_name: "twitter-to-kafka"
     ports:
@@ -96,12 +104,15 @@ services:
       - BPL_DEBUG_PORT=8005
       - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
       - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
+      - ELASTIC-CONFIG_CONNECTION-URL=elastic:9200
   
   gateway:
     depends_on:
       - twitter-keycloak
       - twitter-redis
       - kafka-ui
+      - broker
+      - elastic
     image: "gateway-service"
     container_name: "gateway"
     ports:
@@ -115,8 +126,8 @@ services:
       - ELASTIC_QUERY_SERVICE_URL=http://elastic-query:9001
       - ANALYTICS_SERVICE_URL=http://analytics:9002
       - KAFKA_STREAMS_SERVICE_URL=http://kafka-streams:9003
-      - SPRING_REDIS_HOST=order-redis
-      - SPRING_KEYCLOAK_SERVER_URL=http://order-keycloak:8080
+      - SPRING_REDIS_HOST=twitter-redis
+      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
       - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
   
   # Backing Services
@@ -138,7 +149,7 @@ services:
 
   keycloak-postgres:
     image: postgres:15.3
-    container_name: keycloak_postgres
+    container_name: keycloak-postgres
     ports:
       - "5433:5433"
     environment:
@@ -167,7 +178,7 @@ services:
     depends_on:
       - keycloak-postgres
     healthcheck:
-      test: "curl -f http://order-keycloak:8080/health/ready || exit 1"
+      test: "curl -f http://twitter-keycloak:8080/health/ready || exit 1"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.1.0
@@ -228,6 +239,7 @@ services:
     image: confluentinc/cp-schema-registry:7.1.0
     platform: linux/amd64
     hostname: schema-registry
+    container_name: schema-registry
     depends_on:
       - zookeeper
       - broker
@@ -242,9 +254,38 @@ services:
       SCHEMA_REGISTRY_DEBUG: 'true'
 
 
+  init-kafka:
+    image: confluentinc/cp-kafka:7.1.0
+    platform: linux/amd64
+    depends_on:
+      - schema-registry
+      - broker
+      - zookeeper
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # block until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+
+      # echo -e 'Deleting kafka topics'
+      # kafka-topics --bootstrap-server broker:29092 --topic twitter-topic --delete --if-exists
+      # kafka-topics --bootstrap-server broker:29092 --topic twitter-analytics-topic --delete --if-exists
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic twitter-topic --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic twitter-analytics-topic --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
+
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - init-kafka
+    hostname: kafka-ui
+    container_name: kafka-ui
     ports:
       - "8082:8082"
     environment:
@@ -256,6 +297,7 @@ services:
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-latest}
     hostname: elastic
+    container_name: elastic
     environment:
       - node.name=elastic
       - cluster.name=es-twitter-cluster
