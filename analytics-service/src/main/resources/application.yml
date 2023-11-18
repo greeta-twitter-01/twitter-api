@@ -17,17 +17,17 @@ spring:
   jpa:
     open-in-view: false
     show-sql: true
-    properties:
-      hibernate:
-        use_sql_comments: false
-        format_sql: true
-        jdbc.batch_size: 50
-        order_inserts: true
-        order_updates: true
   datasource:
     url: jdbc:postgresql://twitter-postgres:5432/postgres?currentSchema=analytics&binaryTransfer=true&reWriteBatchedInserts=true
     username: postgres
     password: admin
+    hikari:
+      connection-timeout: 2000 #ms
+      maximum-pool-size: 5
+  sql:
+    init:
+      mode: ALWAYS
+      schema-locations: classpath:init-schema.sql
 
   keycloak:
     server-url: http://localhost:8080

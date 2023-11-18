@@ -1,6 +1,5 @@
 package net.greeta.twitter.kafka.streams;
 
-import net.greeta.twitter.kafka.streams.init.StreamsInitializer;
 import net.greeta.twitter.kafka.streams.runner.StreamsRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +18,8 @@ public class KafkaStreamsServiceApplication implements CommandLineRunner {
 
 	private final StreamsRunner<String, Long> streamsRunner;
 
-	private final StreamsInitializer streamsInitializer;
-
-	public KafkaStreamsServiceApplication(StreamsRunner<String, Long> runner,
-										  StreamsInitializer initializer) {
+	public KafkaStreamsServiceApplication(StreamsRunner<String, Long> runner) {
 		this.streamsRunner = runner;
-		this.streamsInitializer = initializer;
 	}
 
 	public static void main(String[] args) {
@@ -34,7 +29,6 @@ public class KafkaStreamsServiceApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 		LOG.info("App starts...");
-		streamsInitializer.init();
 		streamsRunner.start();
 	}
 

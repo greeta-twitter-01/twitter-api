@@ -2,7 +2,6 @@ package net.greeta.twitter.kafka.to.elastic.consumer.impl;
 
 import net.greeta.twitter.elastic.index.client.service.ElasticIndexClient;
 import net.greeta.twitter.elastic.model.index.impl.TwitterIndexModel;
-import net.greeta.twitter.kafka.admin.client.KafkaAdminClient;
 import net.greeta.twitter.kafka.avro.model.TwitterAvroModel;
 import net.greeta.twitter.kafka.config.KafkaConfigData;
 import net.greeta.twitter.kafka.config.KafkaConsumerConfigData;
@@ -29,8 +28,6 @@ public class TwitterKafkaConsumer implements KafkaConsumer<TwitterAvroModel> {
 
     private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
-    private final KafkaAdminClient kafkaAdminClient;
-
     private final KafkaConfigData kafkaConfigData;
 
     private final KafkaConsumerConfigData kafkaConsumerConfigData;
@@ -40,13 +37,11 @@ public class TwitterKafkaConsumer implements KafkaConsumer<TwitterAvroModel> {
     private final ElasticIndexClient<TwitterIndexModel> elasticIndexClient;
 
     public TwitterKafkaConsumer(KafkaListenerEndpointRegistry listenerEndpointRegistry,
-                                KafkaAdminClient adminClient,
                                 KafkaConfigData configData,
                                 KafkaConsumerConfigData consumerConfigData,
                                 AvroToElasticModelTransformer transformer,
                                 ElasticIndexClient<TwitterIndexModel> indexClient) {
         this.kafkaListenerEndpointRegistry = listenerEndpointRegistry;
-        this.kafkaAdminClient = adminClient;
         this.kafkaConfigData = configData;
         this.kafkaConsumerConfigData = consumerConfigData;
         this.avroToElasticModelTransformer = transformer;
@@ -55,7 +50,6 @@ public class TwitterKafkaConsumer implements KafkaConsumer<TwitterAvroModel> {
 
     @EventListener
     public void onAppStarted(ApplicationStartedEvent event) {
-        kafkaAdminClient.checkTopicsCreated();
         LOG.info("Topics with name {} is ready for operations!", kafkaConfigData.getTopicNamesToCreate().toArray());
         Objects.requireNonNull(kafkaListenerEndpointRegistry
                 .getListenerContainer(kafkaConsumerConfigData.getConsumerGroupId())).start();

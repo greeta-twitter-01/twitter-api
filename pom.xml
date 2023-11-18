@@ -127,11 +127,6 @@
 			</dependency>
 			<dependency>
 				<groupId>net.greeta.twitter</groupId>
-				<artifactId>kafka-admin</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.greeta.twitter</groupId>
 				<artifactId>kafka-producer</artifactId>
 				<version>${project.version}</version>
 			</dependency>

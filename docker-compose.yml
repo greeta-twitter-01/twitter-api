@@ -9,6 +9,7 @@ services:
       - kafka-ui
       - broker
       - elastic
+      - schema-registry
     image: "elastic-query-service"
     container_name: "elastic-query"
     ports:
@@ -30,6 +31,7 @@ services:
       - kafka-ui
       - broker
       - elastic
+      - schema-registry
     image: "analytics-service"
     container_name: "analytics"
     ports:
@@ -51,6 +53,7 @@ services:
       - kafka-ui
       - broker
       - elastic
+      - schema-registry
     image: "kafka-streams-service"
     container_name: "kafka-streams"
     ports:
@@ -71,6 +74,7 @@ services:
       - kafka-ui
       - broker
       - elastic
+      - schema-registry
     image: "twitter-to-kafka-service"
     container_name: "twitter-to-kafka"
     ports:
@@ -92,6 +96,7 @@ services:
       - twitter-to-kafka
       - broker
       - elastic
+      - schema-registry
     image: "kafka-to-elastic-service"
     container_name: "kafka-to-elastic"
     ports:
@@ -113,6 +118,7 @@ services:
       - kafka-ui
       - broker
       - elastic
+      - schema-registry
     image: "gateway-service"
     container_name: "gateway"
     ports:
@@ -214,6 +220,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_COMPRESSION_TYPE: producer
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0

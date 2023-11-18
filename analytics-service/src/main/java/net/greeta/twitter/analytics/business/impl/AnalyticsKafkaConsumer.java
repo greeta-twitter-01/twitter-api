@@ -4,7 +4,6 @@ import net.greeta.twitter.analytics.business.KafkaConsumer;
 import net.greeta.twitter.analytics.dataaccess.entity.AnalyticsEntity;
 import net.greeta.twitter.analytics.dataaccess.repository.AnalyticsRepository;
 import net.greeta.twitter.analytics.transformer.AvroToDbEntityModelTransformer;
-import net.greeta.twitter.kafka.admin.client.KafkaAdminClient;
 import net.greeta.twitter.kafka.avro.model.TwitterAnalyticsAvroModel;
 import net.greeta.twitter.kafka.config.KafkaConfigData;
 import org.slf4j.Logger;
@@ -27,8 +26,6 @@ public class AnalyticsKafkaConsumer implements KafkaConsumer<TwitterAnalyticsAvr
 
     private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
-    private final KafkaAdminClient kafkaAdminClient;
-
     private final KafkaConfigData kafkaConfig;
 
     private final AvroToDbEntityModelTransformer avroToDbEntityModelTransformer;
@@ -37,12 +34,10 @@ public class AnalyticsKafkaConsumer implements KafkaConsumer<TwitterAnalyticsAvr
 
 
     public AnalyticsKafkaConsumer(KafkaListenerEndpointRegistry registry,
-                                  KafkaAdminClient adminClient,
                                   KafkaConfigData config,
                                   AvroToDbEntityModelTransformer transformer,
                                   AnalyticsRepository repository) {
         this.kafkaListenerEndpointRegistry = registry;
-        this.kafkaAdminClient = adminClient;
         this.kafkaConfig = config;
         this.avroToDbEntityModelTransformer = transformer;
         this.analyticsRepository = repository;
@@ -50,7 +45,6 @@ public class AnalyticsKafkaConsumer implements KafkaConsumer<TwitterAnalyticsAvr
 
     @EventListener
     public void onAppStarted(ApplicationStartedEvent event) {
-        kafkaAdminClient.checkTopicsCreated();
         LOG.info("Topics with name {} is ready for operations!", kafkaConfig.getTopicNamesToCreate().toArray());
         kafkaListenerEndpointRegistry.getListenerContainer("twitterAnalyticsTopicListener").start();
     }

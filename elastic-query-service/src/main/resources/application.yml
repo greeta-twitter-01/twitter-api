@@ -21,9 +21,14 @@ spring:
     url: jdbc:postgresql://twitter-postgres:5432/postgres?currentSchema=public&binaryTransfer=true&reWriteBatchedInserts=true
     username: postgres
     password: admin
-    schema: classpath:init-schema.sql
-    data: classpath:init-data.sql
-    initialization-mode: always
+    hikari:
+      connection-timeout: 2000 #ms
+      maximum-pool-size: 5
+  sql:
+    init:
+      mode: ALWAYS
+      schema-locations: classpath:init-schema.sql,classpath:init-data.sql
+
 
   keycloak:
     server-url: http://localhost:8080

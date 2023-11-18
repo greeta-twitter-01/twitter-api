@@ -22,10 +22,6 @@
         </dependency>
         <dependency>
             <groupId>net.greeta.twitter</groupId>
-            <artifactId>kafka-admin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.greeta.twitter</groupId>
             <artifactId>kafka-consumer</artifactId>
         </dependency>
         <dependency>
