@@ -90,7 +90,7 @@ sh docker-app-restart.sh
 
 - find all documents or document by id on `Elastic Query` page
 
-- click `Authorize` on `Elastic Query` page and use admin/admin or user/user for credentials (clientId should be `twitter-app`)
+- click `Authorize` on `Elastic Query` page and use `admin/admin` or `user/user` for credentials (`clientId` should be `twitter-app`)
 
 - search documents by text using `get-document-by-text` endpoint. It will return all documents containing the Text + Word Count for this Text. (see the list of text words in `MockKafkaStreamRunner`)
 
