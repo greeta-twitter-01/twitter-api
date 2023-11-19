@@ -30,6 +30,7 @@ public class ElasticQueryServiceConfigData {
     public static class Query {
         private String method;
         private String accept;
+        private String baseUrl;
         private String uri;
     }
 }

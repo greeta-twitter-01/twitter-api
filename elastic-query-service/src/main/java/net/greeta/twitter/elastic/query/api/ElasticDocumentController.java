@@ -48,7 +48,6 @@ public class ElasticDocumentController {
     @Value("${server.port}")
     private String port;
 
-    //@PostAuthorize("hasPermission(returnObject, 'READ')")
     @Operation(summary = "Get all elastic documents.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful response.", content = {
@@ -68,7 +67,6 @@ public class ElasticDocumentController {
     }
 
 
-    //@PreAuthorize("hasPermission(#id, 'ElasticQueryServiceResponseModel','READ')")
     @Operation(summary = "Get elastic document by id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful response.", content = {
@@ -109,8 +107,6 @@ public class ElasticDocumentController {
     }
 
 
-    //@PreAuthorize("hasRole('TWITTER_USER') || hasRole('TWITTER_MANAGER')")
-    //@PostAuthorize("hasPermission(returnObject, 'READ')")
     @Operation(summary = "Get elastic document by text.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful response.", content = {
@@ -125,15 +121,13 @@ public class ElasticDocumentController {
     public @ResponseBody
     ResponseEntity<ElasticQueryServiceAnalyticsResponseModel>
     getDocumentByText(@RequestBody @Valid ElasticQueryServiceRequestModel elasticQueryServiceRequestModel,
-                      @AuthenticationPrincipal Jwt jwt,
-                      @RegisteredOAuth2AuthorizedClient("twitter-app")
-                              OAuth2AuthorizedClient oAuth2AuthorizedClient) {
+                      @AuthenticationPrincipal Jwt jwt) {
         LOG.info("User {} querying documents for text {}", JwtHelper.getUsername(jwt, jwtAuthConverterProperties),
                 elasticQueryServiceRequestModel.getText());
 
         ElasticQueryServiceAnalyticsResponseModel response =
                 elasticQueryService.getDocumentByText(elasticQueryServiceRequestModel.getText(),
-                        oAuth2AuthorizedClient.getAccessToken().getTokenValue());
+                        jwt.getTokenValue());
         LOG.info("Elasticsearch returned {} of documents on port {}",
                 response.getQueryResponseModels().size(), port);
         return ResponseEntity.ok(response);

@@ -1,4 +1,4 @@
-docker-compose down
+docker-compose -f docker-app-compose.yml down
 
 mvn clean install -DskipTests
 
@@ -28,4 +28,4 @@ mvn spring-boot:build-image -DskipTests \
 
 cd ../
 
-docker-compose up -d
+docker-compose -f docker-app-compose.yml up -d

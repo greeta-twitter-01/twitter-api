@@ -95,6 +95,7 @@ public class TwitterElasticQueryService implements ElasticQueryService {
                                                                             String accessToken,
                                                                             ElasticQueryServiceConfigData.Query query) {
         return webClientBuilder
+                .baseUrl(query.getBaseUrl())
                 .build()
                 .method(HttpMethod.valueOf(query.getMethod()))
                 .uri(query.getUri(), uriBuilder -> uriBuilder.build(text))

@@ -7,33 +7,51 @@
 sh docker-start.sh
 ```
 
-- this script will build docker images and start environment with your code changes
+- this script will build kafka, elastic and other third-party docker images and start environment with your code changes
 
 - Warning! Make sure that all kafka containers are successful are started successfully! (see `Kafka Containers Troubleshooting` below)
 
-- open `localhost:9000` in your Browser and switch between `Order` and `Customer` Microservices
+```
+sh docker-app-start.sh
+```
+
+- this script will build spring boot docker images and start environment with your code changes
+
+- Warning! Make sure that all kafka containers are successful are started successfully, before running this script! (see `Kafka Containers Troubleshooting` below)
+
+```
+sh docker-app-restart.sh
+```
+
+- this script will restart spring boot docker images without rebuilding them (use `sh docker-app-start.sh` if you want to rebuild docker images after code changes)
+
+- For example, if `kafka-to-elastic-service` stops with errors, run `sh docker-app-restart` to restart all spring boot containers (or use `docker-compose -f docker-app-compose.yml up -d` if you don't want to restart all spring boot containers)
+
+- If `twitter-to-kafka` service starts successfully, it will start generating mock twitter messages and add them to Kafka `twitter-topic`
+
+- If `kafka-to-elastic` service starts successfully, it will consume messages from Kafka `twitter-topic` and add them to `Elasticsearch` indexed documents (see the docker logs)
+
+- If `kafka-streams` service starts successfully, it will consume messages from Kafka `twitter-topic` and add them to Kafka `twitter-analytics-topic`
+
+- If `analytics` service starts successfully, it will consume messages from Kafka `twitter-analytics-topic` and insert records to `twitter-analytics` PostgreSQL Table
+
+- open `localhost:9000` in your Browser and switch between `Analytics`, `Elastic Query` and `Kafka Streams` Microservices
 
 - Warning! If Swagger UI fails to load on the first try, please, refresh the page!
 
-- Warning! Sometimes switching between `Order` and `Customer` doesn't refresh Swagger UI completely and you might see wrong REST endpoints: just refresh the page and continue
+- Warning! Sometimes switching between services doesn't refresh Swagger UI completely and you might see wrong REST endpoints: just refresh the page and continue
 
-- Warning! Sometimes REST endpoints return `504 Gateway Timeout`, just retry the REST API endpoint again
+- Warning! Sometimes REST endpoints return `504 Gateway Timeout`, `405 Method not Allowed` or other errors, just retry the REST API endpoint again
 
 - click "Authorize" and use admin/admin or user/user for credentials (clientId should be `twitter-app`)
 
-- create Customer on `Customer` page (see `json-files/customer.json` as example)
+- find word count for any word on `Analytics` page (see the list of words in `MockKafkaStreamRunner`)
 
-- create Order on `Order` page (see `json-files/order.json` as example: restaurants with these ids are already created with sql init scripts)
+- find word count for any word on `Kafka Streams` page (see the list of words in `MockKafkaStreamRunner`)
 
-- Warning! If Kafka or Schema Registry has errors, you will see error "Customer with this id doesn't exist", because customer, created in the previous step, was not propagated by Kafka. Please, make sure that your Kafka Containers are running correctly (see  `Kafka Containers Troubleshooting`)
+- find all documents or document by id on `Elastic Query` page
 
-- if order is created successfully you will receive 200 response with `tracking_id`
-
-- find the order by `tracking_id` copied from the previous response. 
-
-- If you see the order and it has status `PAID`, then Kafka is configured correctly.
-
-- Congratulations! You successfuly tested `Food Ordering System` Saga transactions and CQRS!
+- Congratulations! You successfuly tested `Twitter Analytics` Microservices with CQRS!
 
 - See this README file for AWS Infrastructure Setup: **https://github.com/greeta-twitter-01/twitter-infra**
 
@@ -58,4 +76,3 @@ kubectl port-forward 8002:8002
 - If everything is sussessful, containers `cp-server` and `cp-schema-registry` should be running without errors and container `cp-kafka` should finish its job and exit without errors.
 - if any of the containers has exited with errors, run `docker-compose up -d` again
 - if any of the containers stopped responding (check the logs), remove container (docker stop, docker rm ) and run `docker-compose up -d` again
-- For example, if `kafka-to-elastic-service` stopped with errors, just run `docker-compose up -d` again

@@ -1,140 +1,11 @@
 version: "3.8"
+
+networks:
+  twitter:
+    driver: bridge
+
+
 services:
-  # Applications
-
-  elastic-query:
-    depends_on:
-      - twitter-keycloak
-      - twitter-postgres
-      - kafka-ui
-      - broker
-      - elastic
-      - schema-registry
-    image: "elastic-query-service"
-    container_name: "elastic-query"
-    ports:
-      - 9001:9001
-      - 8001:8001
-    environment:
-      - SERVER_PORT=9001
-      - BPL_JVM_THREAD_COUNT=50
-      - BPL_DEBUG_ENABLED=true
-      - BPL_DEBUG_PORT=8001
-      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
-      - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
-      - ELASTIC-CONFIG_CONNECTION-URL=elastic:9200
-
-  analytics:
-    depends_on:
-      - twitter-keycloak
-      - twitter-postgres
-      - kafka-ui
-      - broker
-      - elastic
-      - schema-registry
-    image: "analytics-service"
-    container_name: "analytics"
-    ports:
-      - 9002:9002
-      - 8002:8002
-    environment:
-      - SERVER_PORT=9002
-      - BPL_JVM_THREAD_COUNT=50
-      - BPL_DEBUG_ENABLED=true
-      - BPL_DEBUG_PORT=8002
-      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
-      - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
-
-
-  kafka-streams:
-    depends_on:
-      - twitter-keycloak
-      - twitter-postgres
-      - kafka-ui
-      - broker
-      - elastic
-      - schema-registry
-    image: "kafka-streams-service"
-    container_name: "kafka-streams"
-    ports:
-      - 9003:9003
-      - 8003:8003
-    environment:
-      - SERVER_PORT=9003
-      - BPL_JVM_THREAD_COUNT=50
-      - BPL_DEBUG_ENABLED=true
-      - BPL_DEBUG_PORT=8003
-      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
-      - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
-
-  twitter-to-kafka:
-    depends_on:
-      - twitter-keycloak
-      - twitter-postgres
-      - kafka-ui
-      - broker
-      - elastic
-      - schema-registry
-    image: "twitter-to-kafka-service"
-    container_name: "twitter-to-kafka"
-    ports:
-      - 9004:9004
-      - 8004:8004
-    environment:
-      - SERVER_PORT=9004
-      - BPL_JVM_THREAD_COUNT=50
-      - BPL_DEBUG_ENABLED=true
-      - BPL_DEBUG_PORT=8004
-      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
-      - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
-
-  kafka-to-elastic:
-    depends_on:
-      - twitter-keycloak
-      - twitter-postgres
-      - kafka-ui
-      - twitter-to-kafka
-      - broker
-      - elastic
-      - schema-registry
-    image: "kafka-to-elastic-service"
-    container_name: "kafka-to-elastic"
-    ports:
-      - 9005:9005
-      - 8005:8005
-    environment:
-      - SERVER_PORT=9005
-      - BPL_JVM_THREAD_COUNT=50
-      - BPL_DEBUG_ENABLED=true
-      - BPL_DEBUG_PORT=8005
-      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
-      - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
-      - ELASTIC-CONFIG_CONNECTION-URL=elastic:9200
-  
-  gateway:
-    depends_on:
-      - twitter-keycloak
-      - twitter-redis
-      - kafka-ui
-      - broker
-      - elastic
-      - schema-registry
-    image: "gateway-service"
-    container_name: "gateway"
-    ports:
-      - 9000:9000
-      - 8000:8000
-    environment:
-      - SERVER_PORT=9000
-      # Buildpacks environment variable to enable debug through a socket on port 8000
-      - BPL_DEBUG_ENABLED=true
-      - BPL_DEBUG_PORT=8000
-      - ELASTIC_QUERY_SERVICE_URL=http://elastic-query:9001
-      - ANALYTICS_SERVICE_URL=http://analytics:9002
-      - KAFKA_STREAMS_SERVICE_URL=http://kafka-streams:9003
-      - SPRING_REDIS_HOST=twitter-redis
-      - SPRING_KEYCLOAK_SERVER_URL=http://twitter-keycloak:8080
-      - SPRING_KEYCLOAK_SERVER_EXTERNAL_URL=http://localhost:8080
   
   # Backing Services
 
@@ -146,12 +17,16 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
+    networks:
+      - twitter
 
   twitter-redis:
     image: "redis:7.0"
     container_name: "twitter-redis"
     ports:
       - 6379:6379
+    networks:
+      - twitter
 
   keycloak-postgres:
     image: postgres:15.3
@@ -164,7 +39,10 @@ services:
       - POSTGRES_PASSWORD=password
     healthcheck:
       test: "pg_isready -U postgres"
-  
+    networks:
+      - twitter
+
+
   twitter-keycloak:
     image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
     container_name: twitter-keycloak
@@ -185,6 +63,8 @@ services:
       - keycloak-postgres
     healthcheck:
       test: "curl -f http://twitter-keycloak:8080/health/ready || exit 1"
+    networks:
+      - twitter
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.1.0
@@ -203,6 +83,9 @@ services:
     volumes:
       - "./volumes/zookeeper/data:/var/lib/zookeeper/data"
       - "./volumes/zookeeper/transactions:/var/lib/zookeeper/log"
+    networks:
+      - twitter
+
 
   broker:
     image: confluentinc/cp-server:7.1.0
@@ -219,7 +102,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_COMPRESSION_TYPE: producer
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
@@ -231,7 +114,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_JMX_PORT: 9101
       KAFKA_JMX_HOSTNAME: localhost
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:9092
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
@@ -242,6 +125,10 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+    networks:
+      - twitter
+
+
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.1.0
@@ -258,9 +145,10 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
       SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://broker:29092,LISTENER_LOCAL://localhost:9092
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://broker:9092,LISTENER_LOCAL://localhost:9092
       SCHEMA_REGISTRY_DEBUG: 'true'
-
+    networks:
+      - twitter
 
   init-kafka:
     image: confluentinc/cp-kafka:7.1.0
@@ -273,20 +161,21 @@ services:
     command: |
       "
       # block until kafka is reachable
-      kafka-topics --bootstrap-server broker:29092 --list
+      kafka-topics --bootstrap-server broker:9092 --list
 
       # echo -e 'Deleting kafka topics'
-      # kafka-topics --bootstrap-server broker:29092 --topic twitter-topic --delete --if-exists
-      # kafka-topics --bootstrap-server broker:29092 --topic twitter-analytics-topic --delete --if-exists
+      # kafka-topics --bootstrap-server broker:9092 --topic twitter-topic --delete --if-exists
+      # kafka-topics --bootstrap-server broker:9092 --topic twitter-analytics-topic --delete --if-exists
 
       echo -e 'Creating kafka topics'
-      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic twitter-topic --replication-factor 1 --partitions 1
-      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic twitter-analytics-topic --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:9092 --create --if-not-exists --topic twitter-topic --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:9092 --create --if-not-exists --topic twitter-analytics-topic --replication-factor 1 --partitions 1
 
       echo -e 'Successfully created the following topics:'
-      kafka-topics --bootstrap-server broker:29092 --list
+      kafka-topics --bootstrap-server broker:9092 --list
       "
-
+    networks:
+      - twitter
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -299,8 +188,10 @@ services:
     environment:
       - SERVER_PORT=8082
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:29092
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:9092
       - DYNAMIC_CONFIG_ENABLED=true
+    networks:
+      - twitter
 
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-latest}
@@ -321,3 +212,5 @@ services:
       - "./volumes/elastic:/usr/share/elasticsearch/data"
     ports:
       - 9200:9200
+    networks:
+      - twitter

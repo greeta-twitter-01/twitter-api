@@ -100,11 +100,13 @@ elastic-query-service:
     query-type: 'ANALYTICS_DATABASE'
   query-from-kafka-state-store:
     method: GET
-    uri: "http://gateway:9000/kafka-streams/get-word-count-by-word/{word}"
+    base-url: "http://kafka-streams:9003"
+    uri: "/get-word-count-by-word/{word}"
     accept: ${elastic-query-service.webclient.accept-type}
   query-from-analytics-database:
     method: GET
-    uri: "http://gateway:9000/analytics/get-word-count-by-word/{word}"
+    base-url: "http://analytics:9002"
+    uri: "/get-word-count-by-word/{word}"
     accept: ${elastic-query-service.webclient.accept-type}
 
 
@@ -113,6 +115,6 @@ elastic-query-config:
 
 elastic-config:
   index-name: twitter-index
-  connection-url: http://elastic-query:9001
+  connection-url: elastic:9200
   connect-timeout-ms: 5000
   socket-timeout-ms: 30000

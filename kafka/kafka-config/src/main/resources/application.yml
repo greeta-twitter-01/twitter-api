@@ -1,5 +1,5 @@
 kafka-config:
-  bootstrap-servers: broker:29092
+  bootstrap-servers: broker:9092
   schema-registry-url-key: schema.registry.url
   schema-registry-url: http://schema-registry:8081
   topic-name: twitter-topic

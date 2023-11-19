@@ -22,7 +22,6 @@ public class WebClientConfig {
         this.elasticQueryServiceConfigData = queryServiceConfigData.getWebClient();
     }
 
-    @LoadBalanced
     @Bean
     WebClient.Builder webClientBuilder() {
         return WebClient.builder()
