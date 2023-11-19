@@ -7,10 +7,10 @@ on:
 concurrency: acceptance
 
 env:
-  OWNER: greeta-restaurant-01
+  OWNER: greeta-twitter-01
   REGISTRY: ghcr.io
-  APP_REPO: order-api
-  DEPLOY_REPO: order-infra
+  APP_REPO: twitter-api
+  DEPLOY_REPO: twitter-infra
   VERSION: ${{ github.sha }}
 
 jobs:
