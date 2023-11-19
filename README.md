@@ -83,13 +83,16 @@ sh docker-app-restart.sh
 
 - Warning! Sometimes REST endpoints return `504 Gateway Timeout`, `405 Method not Allowed` or other errors, just retry the REST API endpoint again
 
-- click "Authorize" and use admin/admin or user/user for credentials (clientId should be `twitter-app`)
 
 - find word count for any word on `Analytics` page (see the list of words in `MockKafkaStreamRunner`)
 
 - find word count for any word on `Kafka Streams` page (see the list of words in `MockKafkaStreamRunner`)
 
 - find all documents or document by id on `Elastic Query` page
+
+- click `Authorize` on `Elastic Query` page and use admin/admin or user/user for credentials (clientId should be `twitter-app`)
+
+- search documents by text using `get-document-by-text` endpoint. It will return all documents containing the Text + Word Count for this Text. (see the list of text words in `MockKafkaStreamRunner`)
 
 - Congratulations! You successfuly tested `Twitter Analytics` Microservices with CQRS!
 
