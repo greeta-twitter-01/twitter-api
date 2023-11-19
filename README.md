@@ -1,5 +1,44 @@
-### AWS Startup Template For Spring Boot Developers
-#### Welcome to AWS Full-Stack Developer Template: Swagger UI + Spring Boot + Terraform + Kubernetes + Keycloak Oauth2 Authorization Server + Github Actions + Local Docker Build and Start Environment + Integration Tests with TestContainers + Spring Cloud Gateway + Spring Cloud Stream + Dispatcher Pattern + AWS SSL Certificate + External DNS + AWS Load Balancer Controller + Spring Cloud Kubernetes + Grafana Observability Stack
+### 📖 AWS Startup Template For Spring Boot Developers
+
+<ul style="list-style-type:disc">
+  <li>📖 This <b>AWS Full-Stack Developer Template</b> provides fully functional Development Environment</li>
+    <li>📖 <b>Spring Boot Microservices</b> Source Code</li>
+    <li>📖 Local <b>Docker</b> Environment</li>
+    <li>📖 <b>Github Actions</b> CI/CD <b>GitOps</b> pipeline</li>
+    <li>📖 <b>AWS Terraform</b> Infrastructure with <b>AWS EKS Kubernetes Cluster</b></li>
+  <li>📖 Full <b>Technology Stack</b>:</li>
+  <ul>
+    <li>✅ <b>Swagger UI</b></li>
+    <li>✅ <b>Spring Boot</b></li>
+    <li>✅ <b>Terraform</b></li>
+    <li>✅ <b>Kubernetes</b></li>
+    <li>✅ <b>Kafka Streams</b></li>
+    <li>✅ <b>Twitter to Kafka Event Streaming</b></li>
+    <li>✅ <b>Kafka State Store</b></li>
+    <li>✅ <b>Elasticsearch</b></li>
+    <li>✅ <b>Elastic Query Service</b></li>
+    <li>✅ <b>Kafka UI</b></li>
+    <li>✅ <b>Event-Driven Microservices</b></li>
+    <li>✅ <b>CQRS</b></li>
+    <li>✅ <b>Keycloak Oauth2 Authorization Server</b></li>
+    <li>✅ <b>Github Actions</b></li>
+    <li>✅ <b>Local Docker Environment</b></li>
+    <li>✅ <b>Remote Debugging</b></li>
+    <li>✅ <b>Spring Cloud Gateway</b></li>    
+    <li>✅ <b>AWS SSL Certificate</b></li>  
+    <li>✅ <b>External DNS</b></li>  
+    <li>✅ <b>AWS Load Balancer Controller</b></li>  
+    <li>✅ <b>Spring Cloud Kubernetes</b></li>  
+    <li>✅ <b>Grafana Observability Stack</b></li>     
+  </ul>
+</ul>
+
+### 📖 Source Code
+
+- [API Source Code and Docker Images Repository](https://github.com/greeta-twitter-01/twitter-api)
+- [Terraform Infrastructure and GitOps Pipeline](https://github.com/greeta-twitter-01/twitter-infra)
+
+### 📖 Step By Step Guide
 
 #### Local Docker Environment Setup:
 
