@@ -49,7 +49,7 @@ sh docker-start.sh
 
 - this script will build kafka, elastic and other third-party docker images and start environment with your code changes
 
-- Warning! Make sure that all kafka containers are successful are started successfully! (see `Kafka Containers Troubleshooting` below)
+- Warning! Make sure that all kafka containers are started successfully! (see `Kafka Containers Troubleshooting` below)
 
 ```
 sh docker-app-start.sh
@@ -57,7 +57,7 @@ sh docker-app-start.sh
 
 - this script will build spring boot docker images and start environment with your code changes
 
-- Warning! Make sure that all kafka containers are successful are started successfully, before running this script! (see `Kafka Containers Troubleshooting` below)
+- Warning! Make sure that all kafka containers are started successfully, before running this script! (see `Kafka Containers Troubleshooting` below)
 
 ```
 sh docker-app-restart.sh
