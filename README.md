@@ -67,6 +67,8 @@ sh docker-app-restart.sh
 
 - For example, if `kafka-to-elastic-service` stops with errors, run `sh docker-app-restart` to restart all spring boot containers (or use `docker-compose -f docker-app-compose.yml up -d` if you don't want to restart all spring boot containers)
 
+#### Local Docker Environment Acceptance Test:
+
 - If `twitter-to-kafka` service starts successfully, it will start generating mock twitter messages and add them to Kafka `twitter-topic`
 
 - If `kafka-to-elastic` service starts successfully, it will consume messages from Kafka `twitter-topic` and add them to `Elasticsearch` indexed documents (see the docker logs)
